@@ -5,7 +5,7 @@ agp = "8.13.1" # Ref : https://developer.android.com/build/releases/past-release
 # ksp = "2.1.10-1.0.29"
 # kotlin = "2.2.21"
 # ksp = "2.2.21-2.0.4"
-kotlin = "2.3.0"
+kotlin = "2.3.20"
 kotlinx-coroutines = "1.11.0"
 #region Json &  Gson & Serialization
 kotlinx-serialization = "1.11.0"

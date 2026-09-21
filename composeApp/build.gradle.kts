@@ -24,18 +24,6 @@ kotlin {
 
     jvm()
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser {
-            commonWebpackConfig {
-                cssSupport {
-                    enabled = true
-                }
-            }
-        }
-        binaries.executable()
-    }
-
     val xcfName = "ComposeApp"
     listOf(
         iosArm64(),
@@ -45,6 +33,11 @@ kotlin {
             baseName = xcfName
             isStatic = true
         }
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
     }
 
     sourceSets {
@@ -94,7 +87,6 @@ android {
     }
     defaultConfig {
         minSdk = 24
-        targetSdk = 37
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -85,3 +85,4 @@ project(":shared").projectDir = file("./composeApp")
 
 include(":desktopApp")
 include(":androidApp")
+include(":webApp")
