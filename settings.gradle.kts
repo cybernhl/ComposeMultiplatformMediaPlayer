@@ -82,3 +82,6 @@ dependencyResolutionManagement {
 rootProject.name = "ReelsDemo"
 include(":shared")
 project(":shared").projectDir = file("./composeApp")
+
+include(":desktopApp")
+include(":androidApp")

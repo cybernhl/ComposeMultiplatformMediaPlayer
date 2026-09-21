@@ -6,13 +6,14 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.compose)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
 }
 
 kotlin {
     androidTarget {
+        publishLibraryVariants("release", "debug")
         compilations.all {
-            compileTaskProvider {
+            compileTaskProvider.configure {
                 compilerOptions {
                     jvmTarget.set(JvmTarget.JVM_1_8)
                     freeCompilerArgs.add("-Xjdk-release=${JavaVersion.VERSION_1_8}")
@@ -36,8 +37,7 @@ kotlin {
     }
 
     val xcfName = "ComposeApp"
-   listOf(
-//        iosX64(),//from jetbrains compose 1.11.1 unsupport iosX64 (Apple remove support X86 OSX)
+    listOf(
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
@@ -60,7 +60,7 @@ kotlin {
             implementation(libs.jetbrains.compose.material)
             implementation(libs.jetbrains.compose.material3)
             implementation(libs.jetbrains.compose.components.resources)
-            implementation(libs.jetbrains.compose.ui.tooling.preview )
+            implementation(libs.jetbrains.compose.ui.tooling.preview)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
@@ -71,8 +71,6 @@ kotlin {
 
             implementation(libs.chaintech.media.player)
         }
-
-
 
         androidMain.dependencies {
             implementation(libs.jetbrains.compose.ui.tooling)
@@ -90,14 +88,13 @@ kotlin {
 
 android {
     namespace = "org.chaintech.app"
-    compileSdk = 36
-
+    compileSdk = 37
+    buildFeatures {
+        compose = true
+    }
     defaultConfig {
         minSdk = 24
-        targetSdk = 36
-        applicationId = "org.chaintech.app.androidApp"
-        versionCode = 1
-        versionName = "1.0.0"
+        targetSdk = 37
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -109,20 +106,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    buildFeatures {
-        compose = true
-    }
-}
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.chaintech.app.desktopApp"
-            packageVersion = "1.0.0"
-        }
     }
 }
 
