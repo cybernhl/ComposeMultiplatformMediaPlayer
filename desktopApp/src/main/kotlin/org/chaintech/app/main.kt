@@ -1,11 +1,10 @@
-
+package org.chaintech.app
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import chaintech.videoplayer.util.LocalWindowState
-import org.chaintech.app.MainView
 import java.awt.Dimension
 
 fun main() = application {
