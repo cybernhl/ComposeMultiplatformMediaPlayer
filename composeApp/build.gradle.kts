@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.android.application)
 }
 
@@ -35,13 +35,14 @@ kotlin {
         binaries.executable()
     }
 
-    listOf(
-        iosX64(),
+    val xcfName = "ComposeApp"
+   listOf(
+//        iosX64(),//from jetbrains compose 1.11.1 unsupport iosX64 (Apple remove support X86 OSX)
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = xcfName
             isStatic = true
         }
     }
@@ -53,13 +54,13 @@ kotlin {
             }
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.material)
-            implementation(compose.material3)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.runtime)
+            implementation(libs.jetbrains.compose.foundation)
+            implementation(libs.jetbrains.compose.material.icons.extended)
+            implementation(libs.jetbrains.compose.material)
+            implementation(libs.jetbrains.compose.material3)
+            implementation(libs.jetbrains.compose.components.resources)
+            implementation(libs.jetbrains.compose.ui.tooling.preview )
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
@@ -68,14 +69,14 @@ kotlin {
             implementation(libs.image.loader)
             implementation(libs.media.kit)
 
-            implementation(libs.media.player)
+            implementation(libs.chaintech.media.player)
         }
 
 
 
         androidMain.dependencies {
-            implementation(compose.uiTooling)
-            implementation(libs.androidx.activityCompose)
+            implementation(libs.jetbrains.compose.ui.tooling)
+            implementation(libs.androidx.activity.compose)
         }
 
         iosMain.dependencies {
