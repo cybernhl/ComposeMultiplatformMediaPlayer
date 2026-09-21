@@ -80,4 +80,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ReelsDemo"
-include(":composeApp")
+include(":shared")
+project(":shared").projectDir = file("./composeApp")

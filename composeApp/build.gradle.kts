@@ -124,3 +124,9 @@ compose.desktop {
         }
     }
 }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "reelsdemo.composeapp.generated.resources"
+    generateResClass = always
+}
