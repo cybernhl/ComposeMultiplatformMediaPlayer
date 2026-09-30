@@ -191,6 +191,8 @@ google-services = "4.5.0"
 firebase-bom = "34.17.0"
 svgToCompose = "2.2.1"
 firebase-messaging = "24.1.2"
+# https://cs.android.com/android/platform/superproject/main/+/main:external/guava/METADATA
+guavaVersion = "33.3.1-android"
 
 [plugins]
 android_application = { id = "com.android.application", version.ref = "agp" }
@@ -234,8 +236,9 @@ plugin-source-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref="kotlinx-coroutines" }
+kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-
+kotlinx-coroutines-javafx = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-javafx", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 #endregion
@@ -682,6 +685,7 @@ media3-ui-compose-material3 = { module = "androidx.media3:media3-ui-compose-mate
 media3-datasource = { module = "androidx.media3:media3-datasource", version.ref = "media3" }
 media3-datasource-okhttp = { module = "androidx.media3:media3-datasource-okhttp", version.ref = "media3" }
 #endregion
+guava = { group = "com.google.guava", name = "guava", version.ref = "guavaVersion" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

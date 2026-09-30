@@ -97,7 +97,25 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.vlcj)
+            implementation(libs.kotlinx.coroutines.swing)
+//            implementation(libs.vlcj)
+
+            // 連結至 JavaCvPlayer 專案中的核心庫 (使用 Skia 渲染路徑)
+//                implementation(project(":common-lite"))
+            implementation("com.github.cybernhl.media:lib-common-lite:727538c430")
+//                implementation(project(":core"))
+            implementation("com.github.CMingTseng.JavaCvPlayer:core:v1.0.4")
+//            implementation(project(":core_ui_compose"))
+            implementation("com.github.CMingTseng.JavaCvPlayer:core_ui_compose:v1.0.4")
+//            implementation(project(":core-video-skia"))
+            implementation("com.github.CMingTseng.JavaCvPlayer:core-video-skia:v1.0.4")
+
+
+            // JavaCV & FFmpeg support
+            api(libs.org.bytedeco.javacv.platform)
+            api(libs.org.bytedeco.ffmpeg.platform.gpl)
+
+
             val javafxVersion = "17.0.10"
             val os = when {
                 org.gradle.internal.os.OperatingSystem.current().isMacOsX -> if (System.getProperty("os.arch") == "aarch64") "mac-aarch64" else "mac"
