@@ -104,11 +104,11 @@ kotlin {
 //                implementation(project(":common-lite"))
             implementation("com.github.cybernhl.media:lib-common-lite:727538c430")
 //                implementation(project(":core"))
-            implementation("com.github.CMingTseng.JavaCvPlayer:core:v1.0.4")
+            implementation("com.github.CMingTseng.JavaCvPlayer:core:1.0.0")
 //            implementation(project(":core_ui_compose"))
-            implementation("com.github.CMingTseng.JavaCvPlayer:core_ui_compose:v1.0.4")
+            implementation("com.github.CMingTseng.JavaCvPlayer:core_ui_compose:1.0.0")
 //            implementation(project(":core-video-skia"))
-            implementation("com.github.CMingTseng.JavaCvPlayer:core-video-skia:v1.0.4")
+            implementation("com.github.CMingTseng.JavaCvPlayer:core-video-skia:1.0.0")
 
 
             // JavaCV & FFmpeg support

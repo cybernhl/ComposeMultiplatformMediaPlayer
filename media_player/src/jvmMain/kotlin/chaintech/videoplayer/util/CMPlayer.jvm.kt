@@ -49,9 +49,23 @@ internal actual fun CMPPlayer(
         println("Initializing JavaCvPlayer (FFmpeg) for Desktop")
         val videoSink = SkiaVideoSink()
         val audioSink = JvmAudioSink()
+        val ffmpegOptions = getPlatformHardwareDecoderOption() + mapOf(
+//            "rtsp_transport" to "tcp",     // 強制使用 TCP，避免 UDP 丟包花屏
+            "rtsp_transport" to "udp",
+            "stimeout" to "5000000",        // 連線超時時間 (微秒: 5 秒)
+            "probesize" to "1000000",       // 減少探測標頭大小，加快首幀開播
+            "analyzeduration" to "1000000", // 減少分析時間
+            "timeout" to "10000000",        // 注意：HTTP 使用 "timeout" 而不是 "stimeout"
+            "reconnect" to "1",             // 斷線自動重連
+            "reconnect_streamed" to "1",
+            "reconnect_delay_max" to "5",
+            "user_agent" to "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+            "fflags" to "nobuffer"          // 不緩衝，達到即時低延遲
+        )
         JavaCvPlayer.Builder()
             .setVideoSink(videoSink)
             .setAudioSink(audioSink)
+            .setFFmpegOptions(ffmpegOptions)
             .build()
     }
 
@@ -129,4 +143,21 @@ internal actual fun CMPPlayer(
             ScreenResize.FILL -> ContentScale.Crop
         }
     )
+}
+
+/**
+ * 根據 OS 平台自動選擇對應的硬體加速解碼器：
+ * - macOS: VideoToolbox ("h264_videotoolbox")
+ * - Windows: NVIDIA NVDEC ("h264_nvdec")
+ * - Linux / Intel: QuickSync ("h264_qsv")
+ */
+private fun getPlatformHardwareDecoderOption(): Map<String, String> {
+    val osName = System.getProperty("os.name", "").lowercase()
+    val vcodec = when {
+        osName.contains("mac") || osName.contains("darwin") -> "h264_videotoolbox"
+        osName.contains("win") -> "h264_nvdec"
+        osName.contains("nux") || osName.contains("nix") -> "h264_qsv"
+        else -> null
+    }
+    return if (vcodec != null) mapOf("vcodec" to vcodec) else emptyMap()
 }
