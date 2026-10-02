@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import chaintech.videoplayer.host.DrmConfig
 import chaintech.videoplayer.host.MediaPlayerError
+import chaintech.videoplayer.model.MediaEngineConfig
 import chaintech.videoplayer.model.PlayerSpeed
 import chaintech.videoplayer.model.ScreenResize
 import kotlinx.browser.document
@@ -44,7 +45,8 @@ internal actual fun CMPPlayer(
     selectedSubTitle: SubtitleTrack?,
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
-    qualityList: ((List<VideoQuality>) -> Unit)
+    qualityList: ((List<VideoQuality>) -> Unit),
+    engineConfig: MediaEngineConfig
 ) {
     val videoElement = remember { mutableStateOf<HTMLVideoElement?>(null) }
     val playerRef = remember { mutableStateOf<shaka.Player?>(null) }

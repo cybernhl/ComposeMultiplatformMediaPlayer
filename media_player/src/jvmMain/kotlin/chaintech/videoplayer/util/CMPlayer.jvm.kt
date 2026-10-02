@@ -8,6 +8,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.PlaybackParameters
 import chaintech.videoplayer.host.DrmConfig
 import chaintech.videoplayer.host.MediaPlayerError
+import chaintech.videoplayer.model.HardwareDecoderMode
+import chaintech.videoplayer.model.MediaEngineConfig
+import chaintech.videoplayer.model.RtspTransport
 import chaintech.videoplayer.model.ScreenResize
 import idv.neo.ffmpeg.media.player.core.JavaCvPlayer
 import idv.neo.ffmpeg.media.player.core.audio.JvmAudioSink
@@ -43,25 +46,14 @@ internal actual fun CMPPlayer(
     selectedSubTitle: SubtitleTrack?,
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
-    qualityList: ((List<VideoQuality>) -> Unit)
+    qualityList: ((List<VideoQuality>) -> Unit),
+    engineConfig: MediaEngineConfig
 ) {
-    val player = remember {
+    val player = remember(engineConfig) {
         println("Initializing JavaCvPlayer (FFmpeg) for Desktop")
         val videoSink = SkiaVideoSink()
         val audioSink = JvmAudioSink()
-        val ffmpegOptions = getPlatformHardwareDecoderOption() + mapOf(
-//            "rtsp_transport" to "tcp",     // 強制使用 TCP，避免 UDP 丟包花屏
-            "rtsp_transport" to "udp",
-            "stimeout" to "5000000",        // 連線超時時間 (微秒: 5 秒)
-            "probesize" to "1000000",       // 減少探測標頭大小，加快首幀開播
-            "analyzeduration" to "1000000", // 減少分析時間
-            "timeout" to "10000000",        // 注意：HTTP 使用 "timeout" 而不是 "stimeout"
-            "reconnect" to "1",             // 斷線自動重連
-            "reconnect_streamed" to "1",
-            "reconnect_delay_max" to "5",
-            "user_agent" to "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
-            "fflags" to "nobuffer"          // 不緩衝，達到即時低延遲
-        )
+        val ffmpegOptions = buildJvmFfmpegOptions(engineConfig)
         JavaCvPlayer.Builder()
             .setVideoSink(videoSink)
             .setAudioSink(audioSink)
@@ -160,4 +152,48 @@ private fun getPlatformHardwareDecoderOption(): Map<String, String> {
         else -> null
     }
     return if (vcodec != null) mapOf("vcodec" to vcodec) else emptyMap()
+}
+
+private fun buildJvmFfmpegOptions(engineConfig: MediaEngineConfig): Map<String, String> {
+    val defaultHw = when (engineConfig.hardwareDecoderMode) {
+        HardwareDecoderMode.FORCE_SOFTWARE -> emptyMap()
+        else -> getPlatformHardwareDecoderOption()
+    }
+
+    val connectTimeoutUs = (engineConfig.connectTimeoutSeconds * 1_000_000).toString()
+    val readTimeoutUs = (engineConfig.readTimeoutSeconds * 1_000_000).toString()
+
+    val options = mutableMapOf<String, String>()
+    options.putAll(defaultHw)
+
+    when (engineConfig.preferredRtspTransport) {
+        RtspTransport.TCP -> options["rtsp_transport"] = "tcp"
+        RtspTransport.UDP -> options["rtsp_transport"] = "udp"
+        RtspTransport.AUTO -> {}
+    }
+
+    options["stimeout"] = connectTimeoutUs
+    options["timeout"] = connectTimeoutUs
+    options["rw_timeout"] = readTimeoutUs
+    options["probesize"] = "1000000"
+    options["analyzeduration"] = "1000000"
+
+    if (engineConfig.enableAutoReconnect) {
+        options["reconnect"] = "1"
+        options["reconnect_streamed"] = "1"
+        options["reconnect_delay_max"] = "5"
+    }
+
+    val defaultUserAgent = "Mozilla/5.0 (Linux; Android 16; Pixel 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36"
+    options["user_agent"] = engineConfig.userAgent ?: defaultUserAgent
+
+    if (engineConfig.lowLatencyMode) {
+        options["fflags"] = "nobuffer"
+    }
+
+    engineConfig.escapeHatch?.customFfmpegOptions?.let { customMap ->
+        options.putAll(customMap)
+    }
+
+    return options
 }

@@ -65,6 +65,7 @@ import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSSelectorFromString
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationWillEnterForegroundNotification
+import chaintech.videoplayer.model.MediaEngineConfig
 import platform.UIKit.UIView
 import platform.darwin.NSObject
 
@@ -95,7 +96,8 @@ actual fun CMPPlayer(
     selectedSubTitle: SubtitleTrack?,
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
-    qualityList: ((List<VideoQuality>) -> Unit)
+    qualityList: ((List<VideoQuality>) -> Unit),
+    engineConfig: MediaEngineConfig
 ) {
     /* -------------------- Player -------------------- */
     val player: AVQueuePlayer by remember { mutableStateOf(

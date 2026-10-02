@@ -78,7 +78,8 @@ data class VideoPlayerConfig(
     var enablePIPControl: Boolean = true,
     var enableLongPressFastForward: Boolean = false,
     var longPressPlaybackSpeed: Float = 2.0f,
-    var showControlsOverride: Boolean? = null
+    var showControlsOverride: Boolean? = null,
+    var engineConfig: MediaEngineConfig = MediaEngineConfig()
 ){
     internal val resolvedShowControls: Boolean
         get() = showControlsOverride ?: showControls

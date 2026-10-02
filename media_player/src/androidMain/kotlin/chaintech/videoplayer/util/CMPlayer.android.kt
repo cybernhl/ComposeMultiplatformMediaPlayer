@@ -30,6 +30,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import chaintech.videoplayer.host.DrmConfig
 import chaintech.videoplayer.host.MediaPlayerError
+import chaintech.videoplayer.model.MediaEngineConfig
 import chaintech.videoplayer.model.ScreenResize
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -62,7 +63,8 @@ actual fun CMPPlayer(
     selectedSubTitle: SubtitleTrack?,
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
-    qualityList: ((List<VideoQuality>) -> Unit)
+    qualityList: ((List<VideoQuality>) -> Unit),
+    engineConfig: MediaEngineConfig
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()

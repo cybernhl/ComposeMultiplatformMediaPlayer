@@ -3,6 +3,7 @@ package chaintech.videoplayer.host
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import chaintech.videoplayer.model.MediaEngineConfig
 import chaintech.videoplayer.model.PlayerSpeed
 import chaintech.videoplayer.model.ScreenResize
 import chaintech.videoplayer.util.AudioTrack
@@ -28,6 +29,7 @@ class MediaPlayerHost(
     isFullScreen: Boolean = false,
     headers: Map<String, String>? = null,
     drmConfig: DrmConfig? = null,
+    engineConfig: MediaEngineConfig = MediaEngineConfig()
 ) {
     // Internal states
     internal var url by mutableStateOf(mediaUrl)
@@ -47,6 +49,7 @@ class MediaPlayerHost(
     internal var isPIP by mutableStateOf(false)
     internal var headers by mutableStateOf(headers)
     internal var drmConfig by mutableStateOf(drmConfig)
+    var engineConfig by mutableStateOf(engineConfig)
     var qualityOptions by mutableStateOf(emptyList<VideoQuality>())
     var selectedQuality by mutableStateOf<VideoQuality?>(null)
     var audioTrackOptions by mutableStateOf(emptyList<AudioTrack>())
