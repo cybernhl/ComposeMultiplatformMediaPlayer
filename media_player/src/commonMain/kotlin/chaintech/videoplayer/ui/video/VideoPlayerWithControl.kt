@@ -251,7 +251,8 @@ internal fun VideoPlayerWithControl(
                 audioList = { playerHost.updateAudioTrackOptions(it) },
                 subtitlesList = { playerHost.updateSubTitleOptions(it) },
                 qualityList = { playerHost.updateVideoQualityOptions(it) },
-                engineConfig = playerConfig.engineConfig
+                engineConfig = playerConfig.engineConfig,
+                retryToken = playerHost.retryToken
             )
             playerConfig.watermarkConfig?.let {
                 MovingWatermark(

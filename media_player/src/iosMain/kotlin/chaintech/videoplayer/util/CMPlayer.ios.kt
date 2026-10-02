@@ -97,7 +97,8 @@ actual fun CMPPlayer(
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
     qualityList: ((List<VideoQuality>) -> Unit),
-    engineConfig: MediaEngineConfig
+    engineConfig: MediaEngineConfig,
+    retryToken: Long
 ) {
     /* -------------------- Player -------------------- */
     val player: AVQueuePlayer by remember { mutableStateOf(
@@ -364,7 +365,7 @@ actual fun CMPPlayer(
     }
 
     /* -------------------- Load URL -------------------- */
-    LaunchedEffect(url) {
+    LaunchedEffect(url, retryToken) {
         cleanupObservers()
         isPlaying = false
         val urlObject = createUrl(url) ?: run {

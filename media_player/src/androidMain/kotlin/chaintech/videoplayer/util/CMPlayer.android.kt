@@ -64,7 +64,8 @@ actual fun CMPPlayer(
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
     qualityList: ((List<VideoQuality>) -> Unit),
-    engineConfig: MediaEngineConfig
+    engineConfig: MediaEngineConfig,
+    retryToken: Long
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()

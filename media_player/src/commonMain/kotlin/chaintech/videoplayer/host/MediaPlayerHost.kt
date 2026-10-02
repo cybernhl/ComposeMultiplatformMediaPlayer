@@ -50,6 +50,7 @@ class MediaPlayerHost(
     internal var headers by mutableStateOf(headers)
     internal var drmConfig by mutableStateOf(drmConfig)
     var engineConfig by mutableStateOf(engineConfig)
+    internal var retryToken by mutableStateOf(0L)
     var qualityOptions by mutableStateOf(emptyList<VideoQuality>())
     var selectedQuality by mutableStateOf<VideoQuality?>(null)
     var audioTrackOptions by mutableStateOf(emptyList<AudioTrack>())
@@ -263,5 +264,13 @@ class MediaPlayerHost(
         updateVideoQualityOptions(emptyList())
         updateAudioTrackOptions(emptyList())
         updateSubTitleOptions(emptyList())
+    }
+
+    fun reload() {
+        resetMetadata()
+        fetchAndUpdateMediaInfo(url)
+        isPaused = false
+        setBufferingStatus(true)
+        retryToken++
     }
 }

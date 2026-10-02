@@ -46,7 +46,8 @@ internal actual fun CMPPlayer(
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
     qualityList: ((List<VideoQuality>) -> Unit),
-    engineConfig: MediaEngineConfig
+    engineConfig: MediaEngineConfig,
+    retryToken: Long
 ) {
     val videoElement = remember { mutableStateOf<HTMLVideoElement?>(null) }
     val playerRef = remember { mutableStateOf<shaka.Player?>(null) }
@@ -98,7 +99,7 @@ internal actual fun CMPPlayer(
                 }
             }
         )
-        LaunchedEffect(url) {
+        LaunchedEffect(url, retryToken) {
             val player = playerRef.value ?: return@LaunchedEffect
             try {
                 bufferCallback(true)

@@ -47,7 +47,8 @@ internal actual fun CMPPlayer(
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
     qualityList: ((List<VideoQuality>) -> Unit),
-    engineConfig: MediaEngineConfig
+    engineConfig: MediaEngineConfig,
+    retryToken: Long
 ) {
     val player = remember(engineConfig) {
         println("Initializing JavaCvPlayer (FFmpeg) for Desktop")
@@ -63,7 +64,7 @@ internal actual fun CMPPlayer(
 
     val effectiveUrl = selectedQuality?.url?.takeIf { it.isNotBlank() } ?: url
 
-    LaunchedEffect(effectiveUrl) {
+    LaunchedEffect(effectiveUrl, retryToken) {
         if (effectiveUrl.isNotBlank()) {
             val mediaItem = MediaItem.Builder()
                 .setUri(effectiveUrl)

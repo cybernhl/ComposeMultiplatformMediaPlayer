@@ -34,5 +34,6 @@ internal expect fun CMPPlayer(
     audioList: ((List<AudioTrack>) -> Unit),
     subtitlesList: ((List<SubtitleTrack>) -> Unit),
     qualityList: ((List<VideoQuality>) -> Unit),
-    engineConfig: MediaEngineConfig = MediaEngineConfig()
+    engineConfig: MediaEngineConfig = MediaEngineConfig(),
+    retryToken: Long = 0L
 )
