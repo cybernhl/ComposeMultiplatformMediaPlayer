@@ -1,3 +1,5 @@
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -188,4 +190,27 @@ compose.resources {
     publicResClass = true
     packageOfResClass = "reelsdemo.composemultiplatformmediaplayer.generated.resources"
     generateResClass = always
+}
+
+afterEvaluate {
+    extensions.configure(org.gradle.api.publish.PublishingExtension::class.java) {
+        publications {
+            withType(org.gradle.api.publish.maven.MavenPublication::class.java).configureEach {
+                val targetName = when {
+                    name.contains("IosSimulatorArm64", ignoreCase = true) -> "iosSimulatorArm64"
+                    name.contains("IosArm64", ignoreCase = true) -> "iosArm64"
+                    else -> null
+                }
+                if (targetName != null) {
+                    val zipTask = tasks.findByName("${targetName}ZipMultiplatformResourcesForPublication")
+                    if (zipTask != null) {
+                        artifact(zipTask) {
+                            classifier = "kotlin_resources"
+                            extension = "kotlin_resources.zip"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
