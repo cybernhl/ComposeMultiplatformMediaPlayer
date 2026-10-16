@@ -189,13 +189,3 @@ compose.resources {
     packageOfResClass = "reelsdemo.composemultiplatformmediaplayer.generated.resources"
     generateResClass = always
 }
-
-afterEvaluate {
-    configure<PublishingExtension> {
-        publications.withType<MavenPublication>().configureEach {
-            if (artifactId.contains("media_player")) {
-                artifactId = artifactId.replace("media_player", "compose-multiplatform-media-player")
-            }
-        }
-    }
-}
