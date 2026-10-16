@@ -1,3 +1,7 @@
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
 buildscript {
     // 在 Kotlin DSL 中，使用 extra 屬性來代替 Groovy 的 ext
     extra.apply {
@@ -70,6 +74,34 @@ allprojects {
 }
 
 subprojects {
+    plugins.apply("maven-publish")
+
     afterEvaluate {
+        if (plugins.hasPlugin("com.android.library")) {
+            extensions.findByType(com.android.build.api.dsl.LibraryExtension::class.java)?.apply {
+                publishing {
+                    singleVariant("release")
+                }
+            }
+        }
+    }
+
+    tasks.matching { it.name.startsWith("publish") }.configureEach {
+        doLast {
+            val userHome = System.getProperty("user.home")
+            val mavenLocalDir = File(userHome, ".m2/repository/com/github/cybernhl")
+            if (mavenLocalDir.exists()) {
+                Files.walk(mavenLocalDir.toPath()).forEach { path ->
+                    val file = path.toFile()
+                    if (file.isFile && file.name.endsWith("-metadata.jar")) {
+                        val targetFile = File(file.parentFile, file.name.replace("-metadata.jar", ".jar"))
+                        if (!targetFile.exists()) {
+                            Files.copy(path, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                            println("JitPack helper: Copied ${file.name} -> ${targetFile.name}")
+                        }
+                    }
+                }
+            }
+        }
     }
 }

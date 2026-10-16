@@ -10,8 +10,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "network.chaintech"
-version = "1.0.53"
+group = "com.github.cybernhl.ComposeMultiplatformMediaPlayer"
+version = project.findProperty("version")?.toString()?.takeIf { it != "unspecified" } ?: "0.0.a"
 
 base {
     archivesName.set("compose-multiplatform-media-player")
@@ -112,8 +112,8 @@ kotlin {
 
 
             // JavaCV & FFmpeg support
-            api(libs.org.bytedeco.javacv.platform)
-            api(libs.org.bytedeco.ffmpeg.platform.gpl)
+            implementation(libs.org.bytedeco.javacv.platform)
+            implementation(libs.org.bytedeco.ffmpeg.platform.gpl)
 
 
             val javafxVersion = "17.0.10"
