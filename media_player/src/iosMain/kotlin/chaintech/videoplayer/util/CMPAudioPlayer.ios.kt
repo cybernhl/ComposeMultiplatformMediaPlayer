@@ -45,6 +45,8 @@ import platform.Foundation.NSError
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSSelectorFromString
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 @Composable
@@ -109,27 +111,29 @@ actual fun CMPAudioPlayer(
 
         // Load essential keys before using AVPlayerItem
         asset.loadValuesAsynchronouslyForKeys(listOf("duration", "playable")) {
-            val playableStatus = asset.statusOfValueForKey("playable", null)
-            if (playableStatus != AVKeyValueStatusLoaded || !asset.isPlayable()) {
-                error(MediaPlayerError.ResourceError("Invalid URL or unsupported format"))
-                return@loadValuesAsynchronouslyForKeys
-            }
+            dispatch_async(dispatch_get_main_queue()) {
+                val playableStatus = asset.statusOfValueForKey("playable", null)
+                if (playableStatus != AVKeyValueStatusLoaded || !asset.isPlayable()) {
+                    error(MediaPlayerError.ResourceError("Invalid URL or unsupported format"))
+                    return@dispatch_async
+                }
 
-            val durationStatus = asset.statusOfValueForKey("duration", null)
-            if (durationStatus == AVKeyValueStatusLoaded) {
-                val duration = CMTimeGetSeconds(asset.duration).toFloat()
-                totalTime(duration)
-            }
+                val durationStatus = asset.statusOfValueForKey("duration", null)
+                if (durationStatus == AVKeyValueStatusLoaded) {
+                    val duration = CMTimeGetSeconds(asset.duration).toFloat()
+                    totalTime(duration)
+                }
 
-            val newItem = AVPlayerItem(asset = asset)
-            playerItem.value = newItem
-            player.replaceCurrentItemWithPlayerItem(newItem)
+                val newItem = AVPlayerItem(asset = asset)
+                playerItem.value = newItem
+                player.replaceCurrentItemWithPlayerItem(newItem)
 
-            if (isPause) {
-                player.pause()
-            } else {
-                player.play()
-                setPlayerRate(speed)
+                if (isPause) {
+                    player.pause()
+                } else {
+                    player.play()
+                    setPlayerRate(speed)
+                }
             }
         }
     }

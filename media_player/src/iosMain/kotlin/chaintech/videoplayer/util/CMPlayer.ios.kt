@@ -67,7 +67,11 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationWillEnterForegroundNotification
 import chaintech.videoplayer.model.MediaEngineConfig
 import platform.UIKit.UIView
+import platform.UIKit.UIViewAutoresizingFlexibleHeight
+import platform.UIKit.UIViewAutoresizingFlexibleWidth
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 @Composable
@@ -380,37 +384,41 @@ actual fun CMPPlayer(
 
         // Load essential keys before using AVPlayerItem
         asset.loadValuesAsynchronouslyForKeys(listOf("duration", "playable")) {
-            val playableStatus = asset.statusOfValueForKey("playable", null)
-            if (playableStatus != AVKeyValueStatusLoaded || !asset.isPlayable()) {
-                error(MediaPlayerError.ResourceError("Invalid URL or unsupported format"))
-                return@loadValuesAsynchronouslyForKeys
-            }
+            dispatch_async(dispatch_get_main_queue()) {
+                val playableStatus = asset.statusOfValueForKey("playable", null)
+                if (playableStatus != AVKeyValueStatusLoaded || !asset.isPlayable()) {
+                    error(MediaPlayerError.ResourceError("Invalid URL or unsupported format"))
+                    return@dispatch_async
+                }
 
-            val durationStatus = asset.statusOfValueForKey("duration", null)
-            if (durationStatus == AVKeyValueStatusLoaded) {
-                val duration = CMTimeGetSeconds(asset.duration).toFloat()
-                totalTime(duration)
-            }
+                val durationStatus = asset.statusOfValueForKey("duration", null)
+                if (durationStatus == AVKeyValueStatusLoaded) {
+                    val duration = CMTimeGetSeconds(asset.duration).toFloat()
+                    totalTime(duration)
+                }
 
-            val newItem = AVPlayerItem(asset = asset)
-            player.replaceCurrentItemWithPlayerItem(newItem)
-            setupObservers()
+                val newItem = AVPlayerItem(asset = asset)
+                player.replaceCurrentItemWithPlayerItem(newItem)
+                setupObservers()
 
-            // Ensure playback starts only after everything is ready
-            if (isPause) {
-                player.pause()
-            } else {
-                player.play()
-                setPlayerRate(speed)
-            }
-            setQuality(selectedQuality)
-            isPlaying = true
-            if (!isHlsUrl(url)) {
-                asset.loadValuesAsynchronouslyForKeys(listOf("availableMediaCharacteristicsWithMediaSelectionOptions")) {
-                    val status = asset.statusOfValueForKey("availableMediaCharacteristicsWithMediaSelectionOptions", null)
-                    if (status == AVKeyValueStatusLoaded){
-                        audioList(getAvailableAudioTracks())
-                        subtitlesList(getAvailableSubtitles())
+                // Ensure playback starts only after everything is ready
+                if (isPause) {
+                    player.pause()
+                } else {
+                    player.play()
+                    setPlayerRate(speed)
+                }
+                setQuality(selectedQuality)
+                isPlaying = true
+                if (!isHlsUrl(url)) {
+                    asset.loadValuesAsynchronouslyForKeys(listOf("availableMediaCharacteristicsWithMediaSelectionOptions")) {
+                        dispatch_async(dispatch_get_main_queue()) {
+                            val status = asset.statusOfValueForKey("availableMediaCharacteristicsWithMediaSelectionOptions", null)
+                            if (status == AVKeyValueStatusLoaded){
+                                audioList(getAvailableAudioTracks())
+                                subtitlesList(getAvailableSubtitles())
+                            }
+                        }
                     }
                 }
             }
@@ -424,12 +432,20 @@ actual fun CMPPlayer(
     LaunchedEffect(speed) { if (isPlaying){ setPlayerRate(speed) } }
 
     /* -------------------- UI -------------------- */
-    val playerContainer = UIView()
+    val playerContainer = remember { UIView() }
     Box {
         androidx.compose.ui.viewinterop.UIKitView(
             factory = {
-                playerContainer.addSubview(avPlayerViewController.view)
-                avPlayerViewController.view.setFrame(playerContainer.frame)
+                avPlayerViewController.view.setAutoresizingMask(
+                    UIViewAutoresizingFlexibleWidth or UIViewAutoresizingFlexibleHeight
+                )
+                playerContainer.setAutoresizingMask(
+                    UIViewAutoresizingFlexibleWidth or UIViewAutoresizingFlexibleHeight
+                )
+                if (avPlayerViewController.view.superview != playerContainer) {
+                    playerContainer.addSubview(avPlayerViewController.view)
+                }
+                avPlayerViewController.view.setFrame(playerContainer.bounds)
                 playerContainer
             },
             modifier = modifier,

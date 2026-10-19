@@ -1,8 +1,5 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
-        maven(url = "https://plugins.gradle.org/m2/")
-        mavenCentral()
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -10,6 +7,9 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        gradlePluginPortal()
+        maven(url = "https://plugins.gradle.org/m2/")
+        mavenCentral()
         maven {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots")
             name = "SonatypeSnapshots"

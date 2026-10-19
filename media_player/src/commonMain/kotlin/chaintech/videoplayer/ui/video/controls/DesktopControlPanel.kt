@@ -32,14 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import chaintech.videoplayer.host.MediaPlayerHost
+import androidx.compose.material.icons.filled.AspectRatio
+import androidx.compose.material.icons.filled.CropFree
 import chaintech.videoplayer.model.PlayerOption
 import chaintech.videoplayer.model.ScreenResize
 import chaintech.videoplayer.model.VideoPlayerConfig
 import chaintech.videoplayer.ui.component.AnimatedClickableIcon
-import chaintech.videoplayer.util.ComposeResourceDrawable
-import reelsdemo.composemultiplatformmediaplayer.generated.resources.Res
-import reelsdemo.composemultiplatformmediaplayer.generated.resources.resize_fill
-import reelsdemo.composemultiplatformmediaplayer.generated.resources.resize_fit
+import chaintech.videoplayer.util.VectorPlatformDrawable
 
 @Composable
 internal fun DesktopControlPanel(
@@ -189,8 +188,8 @@ internal fun DesktopControlPanel(
         if (playerConfig.isScreenResizeEnabled) {
             AnimatedClickableIcon(
                 painterRes = when (playerHost.videoFitMode) {
-                    ScreenResize.FIT -> ComposeResourceDrawable(Res.drawable.resize_fit)
-                    ScreenResize.FILL -> ComposeResourceDrawable(Res.drawable.resize_fill)
+                    ScreenResize.FIT -> VectorPlatformDrawable(Icons.Default.AspectRatio)
+                    ScreenResize.FILL -> VectorPlatformDrawable(Icons.Default.CropFree)
                 },
                 contentDescription = "Resize",
                 tint = playerConfig.iconsTintColor,
